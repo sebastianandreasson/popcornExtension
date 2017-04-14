@@ -1,0 +1,50 @@
+body{
+    background-color: #203041;
+    width: 200px;
+    height: 75px;
+}
+
+.instruction1{
+    font-family: 'Proxima Nova';
+    color: white;
+    vertical-align: center;
+}
+
+.connectButton{
+    margin: auto;
+    display: block;
+    width: 100px;
+    height: 25px;
+    background-color: #e94b35;
+    border-radius: 3px;
+    transition: background-color ease .2s;
+    cursor: pointer;
+    
+    text-align: center;
+    font-family: 'Proxima Nova Bold';
+    color: white;
+    vertical-align: center;
+    line-height: 25px;
+    -webkit-user-select: none;
+}
+
+.connectButton:hover { 
+    background-color: #e6341b;
+}
+
+.connectButton p{
+    font-family: 'Proxima Nova Bold';
+    color: white;
+    vertical-align: center;
+    line-height: 25px;
+    -webkit-user-select: none;
+}
+
+.btnIcon{
+    width: 22px;
+    height: 22px;
+    margin-left: 2px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+}

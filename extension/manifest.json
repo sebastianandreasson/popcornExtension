@@ -1,0 +1,45 @@
+{
+    "manifest_version": 2,
+    "name": "Popcorn Time IMDB extension",
+    "description": "Watch TV series directly from IMDB",
+    "version": "0.0.1",
+    "icons": {
+        "16": "icon16.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "permissions": [
+        "http://*/*",
+        "https://*/*"
+    ],
+    "web_accessible_resources": [
+        "style.css",
+        "icon48.png"
+    ],
+    "browser_action": {
+        "default_icon": {
+            "16": "icon16.png",
+            "48": "icon48.png"
+        },
+        "default_title": "Popcorn Time IMDB",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [ {
+        "js": [ 
+            "./jquery-2.1.1.min.js",
+            "./jquery-ui-1.10.4.custom.min.js",
+            "app.js"
+        ],
+        "css": [ "style.css" ],
+        "matches": [ "http://www.imdb.com/title/*", "https://www.imdb.com/title/*"]
+    }],
+    "background": {
+        "scripts": [
+            "./jquery-2.1.1.min.js",
+            "./jquery-ui-1.10.4.custom.min.js",
+            "./socket.io.js",
+            "./popup.js",
+            "background.js"
+        ]
+    }
+}
