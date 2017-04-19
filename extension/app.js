@@ -1,13 +1,11 @@
 $(function () {
-    var infoString = $('.infobar').prop('innerHTML')
-    console.log('infoString', infoString)
-    var isMovie = (!infoString || infoString.indexOf('TV Episode') !== -1)
-    var tvInfo = $('.tv_header span').prop('innerHTML')
+    var infoString = $('.subtext').children(':first')[0].content
+    var isMovie = (infoString && infoString.indexOf('TV') === -1)
+    var tvInfo = $('.bp_heading').prop('innerHTML')
 
     var imdbID
     if (isMovie){
       imdbID = window.location.pathname.slice(7, window.location.pathname.length - 1)
-      console.log(imdbID)
       $.ajax({
         url: 'https://yts.ag/api/v2/list_movies.json?query_term=' + imdbID,
         context: document.body
@@ -19,26 +17,24 @@ $(function () {
           addButton(magnetURL)
         }
       });
-    } else if(infoString){
-      var idURL = $('.tv_header a').attr('href')
-      imdbID = idURL.slice(7, idURL.indexOf('/?'))
+    } else if (infoString){
+      var idURL = $('.titleParent a').attr('href')
+      imdbID = idURL.slice(7, idURL.indexOf('?'))
 
-      // Season 1, Episode 1  <- format of season and episode to parse.
-      var seasonCheck = tvInfo.slice(0, tvInfo.indexOf(','))
-      var length = seasonCheck.length > 'Season x'.length ? 2 : 1
-      var season = tvInfo.slice(tvInfo.indexOf(',')-length, tvInfo.indexOf(','))
-      var episode = tvInfo.slice(tvInfo.indexOf('Episode ')+8, tvInfo.length)
+      // Season 1 <span class="ghost">|</span> Episode 1  <- format of season and episode to parse.
+      var season = tvInfo.slice(tvInfo.indexOf('Season ') + 7, tvInfo.indexOf('<'))
+      var episodeNumber = tvInfo.slice(tvInfo.indexOf('Episode ') + 8, tvInfo.length)
 
       season = parseInt(season)
-      episode = parseInt(episode)
+      episodeNumber = parseInt(episodeNumber)
 
       $.ajax({
-        url: 'http://eztvapi.re/show/' + imdbID,
+        url: 'https://tv-v2.api-fetch.website/show/' + imdbID,
         context: document.body
       }).done(function(data) {
         if (data && data.episodes){
           data.episodes.forEach(function(episode) {
-            if (episode.season == season && episode.episode == episode && episode.torrents) {
+            if (episode.season === season && episode.episode === episodeNumber && episode.torrents) {
               addButton(episode.torrents['0'].url)
             }
           })
