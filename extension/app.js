@@ -11,10 +11,12 @@ $(function () {
         context: document.body
       }).done(function(json) {
         if (json && json.data && json.data.movies){
-          var torrent = json.data.movies[0].torrents[0]
-          var slug = json.data.movies[0].slug
-          var magnetURL = 'magnet:?xt=urn:btih:' + torrent.hash + '&dn=' + slug + '&tr=http://track.one:1234/announce&tr=udp://track.two:80'
-          addButton(magnetURL)
+          var torrents = json.data.movies[0].torrents.map(function(torrent) {
+            var slug = torrent.slug
+            torrent.magnetURL = 'magnet:?xt=urn:btih:' + torrent.hash + '&dn=' + slug + '&tr=http://track.one:1234/announce&tr=udp://track.two:80'
+            return torrent
+          }).reverse()
+          addButton(torrents)
         }
       });
     } else if (infoString){
@@ -35,14 +37,21 @@ $(function () {
         if (data && data.episodes){
           data.episodes.forEach(function(episode) {
             if (episode.season === season && episode.episode === episodeNumber && episode.torrents) {
-              addButton(episode.torrents['0'].url)
+              var torrents = Object.keys(episode.torrents).map(function(key) {
+                return {
+                  quality: key,
+                  magnetURL: episode.torrents[key].url
+                }
+              }).reverse()
+              addButton(torrents)
             }
           })
         }
       })
     }
 
-    function addButton(magnetURL){
+    function addButton(torrents){
+      var magnetURL = torrents[0].magnetURL
       var button = $('<a/>', {
         id: 'watchButton',
         class: 'btn2 btn2_text_on',
@@ -56,8 +65,28 @@ $(function () {
       button.css('position', 'absolute')
       button.css('right', '0')
 
-      $('.title_wrapper').css('padding-bottom', '20px');
+      $('.title_wrapper').css('padding-bottom', '40px');
       $('.title_wrapper').css('position', 'relative');
+
+      var select = $('<select/>', {
+        id: 'qualitySelect',
+      })
+      torrents.forEach(function(torrent) {
+       select.append(
+         $("<option>")
+         .attr('value', torrent.magnetURL)
+         .text(torrent.quality)
+       )
+      })
+      select.css('position', 'absolute')
+      select.css('right', '0')
+      select.css('margin-top', '25px')
+
+      select.appendTo('.title_wrapper')
+
+      $('#qualitySelect').on('change', function(event) {
+        magnetURL = event.target.value
+      })
 
       $('#watchButton').click(function () {
         chrome.extension.sendRequest({
